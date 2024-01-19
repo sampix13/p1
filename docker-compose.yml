@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  nodejs:
+    build:
+      context: ./  # Specify the path to the context (Dockerfile location)
+      dockerfile: Dockerfile  # Specify the Dockerfile name
+    image: node-web-app  # Update this to the desired image name
+    ports:
+      - '8080:80'  # Map port 8080 on the host to port 80 on the container
+    networks:
+      - app-network
+    volumes:
+      - ./
+
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - /Users/sambrown/Desktop/CMSC389T-Winter/p1/web-template:/var/www/html
+      - /Users/sambrown/Desktop/CMSC389T-Winter/p1/web-template/nginx-conf/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - nodejs
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
